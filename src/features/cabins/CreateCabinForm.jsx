@@ -10,7 +10,7 @@ import Textarea from "../../ui/Textarea";
 import { useCreateCabin } from "./useCreateCabin";
 import { useEditCabin } from "./useEditCabin";
 
-function CreateCabinForm({ cabinToEdit = {}, onEditForm }) {
+function CreateCabinForm({ cabinToEdit = {}, onEditForm, onCloseModal }) {
   const { isCreating, createCabin } = useCreateCabin();
   const { isEditing, editCabin } = useEditCabin();
   const isWorking = isCreating || isEditing;
@@ -35,7 +35,8 @@ function CreateCabinForm({ cabinToEdit = {}, onEditForm }) {
         {
           onSuccess: (data) => {
             console.log(data);
-            onEditForm(false);
+            onEditForm?.(false);
+            onCloseModal?.(false);
             resetForm();
           },
         }
@@ -46,7 +47,8 @@ function CreateCabinForm({ cabinToEdit = {}, onEditForm }) {
         {
           onSuccess: (data) => {
             console.log(data);
-            onEditForm(false);
+            onEditForm?.(false);
+            onCloseModal?.(false);
             resetForm();
           },
         }
@@ -58,7 +60,10 @@ function CreateCabinForm({ cabinToEdit = {}, onEditForm }) {
   }
 
   return (
-    <Form onSubmit={handleSubmit(onSubmit, onError)}>
+    <Form
+      onSubmit={handleSubmit(onSubmit, onError)}
+      type={onCloseModal ? "modal" : "regular"}
+    >
       <FormRow label="Cabin name" error={errors?.name?.message}>
         <Input
           type="text"
@@ -151,7 +156,11 @@ function CreateCabinForm({ cabinToEdit = {}, onEditForm }) {
         <Button
           variation="secondary"
           type="reset"
-          onClick={isEditSession ? () => onEditForm(false) : null}
+          onClick={
+            isEditSession
+              ? () => onEditForm?.(false)
+              : () => onCloseModal?.(false)
+          }
         >
           Cancel
         </Button>
